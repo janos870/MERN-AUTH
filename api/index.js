@@ -5,21 +5,30 @@ import userRoute from "./routes/user.route.js";
 import authRoute from "./routes/auth.route.js";
 dotenv.config();
 
-
 const app = express();
 
 app.use(express.json());
 app.use("/api/user", userRoute);
 app.use("/api/auth", authRoute);
 
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  return res.status(statusCode).json({
+    succcess: false,
+    message,
+    statusCode: statusCode,
+    next: err.next,
+  });
+});
 
 mongoose
-  .connect(process.env.MONGODB_URI,)
+  .connect(process.env.MONGODB_URI)
   .then(() => {
     console.log("Mongodb connected!");
   })
   .catch((err) => {
-    console.log(err.message)
+    console.log(err.message);
   });
 
 const PORT = process.env.PORT || 3000;
@@ -27,4 +36,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, function () {
   console.log("Server started on port 3000");
 });
-
