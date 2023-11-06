@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 export default function SignUp() {
   const [formData, setFormData] = useState({});
   const [error, setError] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -32,8 +33,22 @@ export default function SignUp() {
     } catch (error) {
       setLoading(false);
       setError(true);
+    } finally {
+      setShowMessage(true);
     }
   };
+
+  useEffect(() => {
+    if (showMessage) {
+      const timer = setTimeout(() => {
+        setShowMessage(false);
+      }, 5000);
+
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [showMessage]);
 
   return (
     <main className="p-3 max-w-lg mx-auto">
@@ -76,9 +91,15 @@ export default function SignUp() {
           <span className="text-blue-500">Sign In</span>
         </Link>
       </div>
-      <p className={`mt-5 p-3 bg-slate-100 ${error ? "text-red-700" : "text-green-700"}`}>
-        {error ? "Something went wrong!" : "Registration successful!"}
-      </p>
+      {showMessage && (
+        <p
+          className={`mt-5 p-3 bg-slate-100 ${
+            error ? "text-red-700" : "text-green-700"
+          }`}
+        >
+          {error ? "Something went wrong!" : "Registration successful!"}
+        </p>
+      )}
     </main>
   );
 }

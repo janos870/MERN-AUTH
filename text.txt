@@ -1,0 +1,45 @@
+import User from "../models/user.model.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+// import { errorHandler } from "../utils/error.js";
+
+export const signup = async (req, res, next) => {
+  const { username, email, password } = req.body;
+  const hashedPassword = await bcrypt.hashSync(password, 10);
+  const newUser = new User({ username, email, password: hashedPassword });
+  try {
+    await newUser.save();
+    res
+      .status(200)
+      .json({ success: true, message: "Registration successfully." });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Registration failed!" });
+  }
+};
+
+export const signin = async (req, res, next) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid email or password!" });
+    }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid email or password!" });
+    }
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    res.cookie("token", token, {
+      expires: new Date(Date.now() + 3600000),
+      httpOnly: true,
+    }).status(200).json(isMatch);
+    next()
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Login failed!" });
+  }
+};
