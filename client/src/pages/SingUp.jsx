@@ -58,26 +58,23 @@ export default function SignUp() {
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
           type="text"
-          name="username"
           id="username"
           placeholder="Username"
-          className="bg-slate-100 p-3 rounded-lg"
+          className="bg-slate-100 p-3 rounded-lg  dark:text-black"
           onChange={handleChange}
         />
         <input
           type="text"
-          name="email"
           id="email"
           placeholder="Email"
-          className="bg-slate-100 p-3 rounded-lg"
+          className="bg-slate-100 p-3 rounded-lg  dark:text-black"
           onChange={handleChange}
         />
         <input
           type="text"
-          name="password"
           id="password"
           placeholder="Password"
-          className="bg-slate-100 p-3 rounded-lg"
+          className="bg-slate-100 p-3 rounded-lg dark:text-black"
           onChange={handleChange}
         />
         <button
