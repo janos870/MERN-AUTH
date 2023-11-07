@@ -1,12 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from "../redux/user/userSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function SignIn() {
   const [formData, setFormData] = useState({});
-  const [error, setError] = useState(false);
-  const [showMessage, setShowMessage] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { loading, error } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -15,8 +20,7 @@ export default function SignIn() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      setLoading(true);
-      setError(false);
+      dispatch(signInStart());
       const res = await fetch("/api/auth/signin", {
         method: "POST",
         headers: {
@@ -25,32 +29,17 @@ export default function SignIn() {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      setLoading(false);
-      if (res.status === 200 || data.success) {
-        setError(false);
+      dispatch(signInSuccess(data));
+      if (res.status === 200) {
+        dispatch(signInSuccess(data));
         navigate("/");
       } else {
-        setError(true);
+        dispatch(signInFailure(data));
       }
     } catch (error) {
-      setLoading(false);
-      setError(true);
-    } finally {
-      setShowMessage(true);
+      dispatch(signInFailure(error));
     }
   };
-
-  useEffect(() => {
-    if (showMessage) {
-      const timer = setTimeout(() => {
-        setShowMessage(false);
-      }, 5000);
-
-      return () => {
-        clearTimeout(timer);
-      };
-    }
-  }, [showMessage]);
 
   return (
     <main className="p-3 max-w-lg mx-auto">
@@ -81,20 +70,13 @@ export default function SignIn() {
       </form>
       <div className="flex gap-2 mt-5">
         <p>Don&apos;t have an account</p>
-        <Link to={"/sign-up"}>
+        <Link to={"/signup"}>
           <span className="text-blue-500">Sign Up</span>
         </Link>
       </div>
-      {showMessage && (
-        <p
-          className={`mt-5 p-3 bg-slate-100 ${
-            error ? "text-red-700" : "text-green-700"
-          }`}
-        >
-          {error ? "Something went wrong!" : "Signed In successful!"}
-        </p>
-      )}
+      <p className="text-red-700 mt-5">
+        {error ? error.message || "" : ""}
+      </p>
     </main>
   );
 }
-
