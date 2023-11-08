@@ -1,15 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import OAuth from "../components/OAuth";
 
 export default function SignUp() {
   const [formData, setFormData] = useState({});
   const [error, setError] = useState(false);
-  const [showMessage, setShowMessage] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
@@ -25,80 +24,58 @@ export default function SignUp() {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
+      console.log(data);
       setLoading(false);
-      if (res.status !== 200 || !data.success) {
+      if (data.success === false) {
         setError(true);
         return;
       }
-      setError(false);
-      navigate("/");
+      navigate("/sign-in");
     } catch (error) {
       setLoading(false);
       setError(true);
-    } finally {
-      setShowMessage(true);
     }
   };
-
-  useEffect(() => {
-    if (showMessage) {
-      const timer = setTimeout(() => {
-        setShowMessage(false);
-      }, 5000);
-
-      return () => {
-        clearTimeout(timer);
-      };
-    }
-  }, [showMessage]);
-
   return (
-    <main className="p-3 max-w-lg mx-auto">
+    <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl text-center font-semibold my-7">Sign Up</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
           type="text"
-          id="username"
           placeholder="Username"
-          className="bg-slate-100 p-3 rounded-lg  dark:text-black"
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          id="email"
-          placeholder="Email"
-          className="bg-slate-100 p-3 rounded-lg  dark:text-black"
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          id="password"
-          placeholder="Password"
+          id="username"
           className="bg-slate-100 p-3 rounded-lg dark:text-black"
+          onChange={handleChange}
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          id="email"
+          className="bg-slate-100 p-3 rounded-lg  dark:text-black"
+          onChange={handleChange}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          id="password"
+          className="bg-slate-100 p-3 rounded-lg  dark:text-black"
           onChange={handleChange}
         />
         <button
           disabled={loading}
-          className="bg-slate-700 text-white rounded-lg uppercase p-3 hover:opacity-95"
+          className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
         >
           {loading ? "Loading..." : "Sign Up"}
         </button>
+        <OAuth />
       </form>
       <div className="flex gap-2 mt-5">
-        <p>Have an account</p>
-        <Link to={"/signin"}>
-          <span className="text-blue-500">Sign In</span>
+        <p>Have an account?</p>
+        <Link to="/sign-in">
+          <span className="text-blue-500">Sign in</span>
         </Link>
       </div>
-      {showMessage && (
-        <p
-          className={`mt-5 p-3 bg-slate-100 ${
-            error ? "text-red-700" : "text-green-700"
-          }`}
-        >
-          {error ? "Something went wrong!" : "Registration successful!"}
-        </p>
-      )}
-    </main>
+      <p className="text-red-700 mt-5">{error && "Something went wrong!"}</p>
+    </div>
   );
 }

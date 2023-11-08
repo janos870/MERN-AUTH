@@ -6,6 +6,7 @@ import {
   signInFailure,
 } from "../redux/user/userSlice";
 import { useDispatch, useSelector } from "react-redux";
+import OAuth from "../components/OAuth";
 
 export default function SignIn() {
   const [formData, setFormData] = useState({});
@@ -50,15 +51,15 @@ export default function SignIn() {
           name="email"
           id="email"
           placeholder="Email"
-          className="bg-slate-100 p-3 rounded-lg"
+          className="bg-slate-100 p-3 rounded-lg  dark:text-black"
           onChange={handleChange}
         />
         <input
-          type="text"
+          type="password"
           name="password"
           id="password"
           placeholder="Password"
-          className="bg-slate-100 p-3 rounded-lg"
+          className="bg-slate-100 p-3 rounded-lg  dark:text-black"
           onChange={handleChange}
         />
         <button
@@ -67,6 +68,7 @@ export default function SignIn() {
         >
           {loading ? "Loading..." : "Sign In"}
         </button>
+        <OAuth />
       </form>
       <div className="flex gap-2 mt-5">
         <p>Don&apos;t have an account</p>
@@ -74,9 +76,7 @@ export default function SignIn() {
           <span className="text-blue-500">Sign Up</span>
         </Link>
       </div>
-      <p className="text-red-700 mt-5">
-        {error ? error.message || "" : ""}
-      </p>
+      <p className="text-red-700 mt-5">{error ? error.message || "" : ""}</p>
     </main>
   );
 }

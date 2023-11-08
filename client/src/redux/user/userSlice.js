@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   currentUser: null,
   loading: false,
-  error: null,
+  error: false,
 };
 
 export const userSlice = createSlice({
@@ -12,12 +12,11 @@ export const userSlice = createSlice({
   reducers: {
     signInStart: (state) => {
       state.loading = true;
-      state.error = null; // Töröljük az esetleges előző hibát, amikor újra kezdjük a bejelentkezést.
     },
     signInSuccess: (state, action) => {
-      state.loading = false;
       state.currentUser = action.payload;
-      state.error = null; // Sikeres bejelentkezés esetén töröljük a hibát.
+      state.loading = false;
+      state.error = false; 
     },
     signInFailure: (state, action) => {
       state.loading = false;
