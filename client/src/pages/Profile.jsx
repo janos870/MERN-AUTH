@@ -15,6 +15,7 @@ import {
   deleteUserFailure,
   deleteUserStart,
   deleteUserSuccess,
+  signOut,
 } from "../redux/user/userSlice";
 
 export default function Profile() {
@@ -24,7 +25,7 @@ export default function Profile() {
   const [imagePercent, setImagePercent] = useState(0);
   const [imageError, setImageError] = useState(false);
   const [formData, setFormData] = useState({});
-  const [updateSuccess, setUpdateSuccess] = useState(false)
+  const [updateSuccess, setUpdateSuccess] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -77,15 +78,14 @@ export default function Profile() {
         return;
       }
       dispatch(updateUserSuccess(data));
-      setUpdateSuccess(true)
+      setUpdateSuccess(true);
     } catch (error) {
       dispatch(updateUserFailure(error));
     }
   };
 
-  const handleDeleteAccount = async (e) => {
+  const handleDeleteAccount = async () => {
     try {
-      e.preventDefault();
       dispatch(deleteUserStart());
       const res = await fetch(`/api/user/delete/${currentUser._id}`, {
         method: "DELETE",
@@ -99,7 +99,16 @@ export default function Profile() {
     } catch (error) {
       dispatch(deleteUserFailure(error));
     }
-  }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await fetch("/api/auth/signout");
+      dispatch(signOut());
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="p-3 max-w-lg mx-auto">
@@ -168,17 +177,23 @@ export default function Profile() {
         </button>
       </form>
       <div className="flex justify-between mt-5">
-        <span onClick={handleDeleteAccount} className="text-red-700 cursor-pointer hover:opacity-80">
+        <span
+          onClick={handleDeleteAccount}
+          className="text-red-700 cursor-pointer hover:opacity-80"
+        >
           Delete Account
         </span>
-        <span className="text-slate cursor-pointer hover:opacity-80">
+        <span
+          onClick={handleSignOut}
+          className="text-slate cursor-pointer hover:opacity-80"
+        >
           Sign Out
         </span>
       </div>
-      <p className='text-red-700 mt-5'>{error && 'Something went wrong!'}</p>
-      <p className='text-green-700 mt-5'>
-        {updateSuccess && 'User is updated successfully!'}
-      </p>    
+      <p className="text-red-700 mt-5">{error && "Something went wrong!"}</p>
+      <p className="text-green-700 mt-5">
+        {updateSuccess && "User is updated successfully!"}
+      </p>
     </div>
   );
 }
