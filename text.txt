@@ -43,3 +43,11 @@ export const signin = async (req, res, next) => {
     res.status(500).json({ success: false, message: "Login failed!" });
   }
 };
+
+
+  // "vercel": {
+  //   "builds": [
+  //     { "src": "api/index.js", "use": "@now/node" },
+  //     { "src": "client/package.json", "use": "@now/static-build", "config": { "outputDir": "dist/client" } }
+  //   ]
+  // }
